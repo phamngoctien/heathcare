@@ -65,7 +65,6 @@ public class DatLichController {
 		datLich.setTenKhachHang(datLichDetail.getTenKhachHang());
 		datLich.setEmail(datLichDetail.getEmail());
 		datLich.setDiaChi(datLichDetail.getDiaChi());
-		datLich.setNgaySinh(datLichDetail.getNgaySinh());
 		
 		final DatLich updatedOrder = datLichRepository.save(datLich);
 

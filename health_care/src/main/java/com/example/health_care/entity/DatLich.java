@@ -58,8 +58,6 @@ public class DatLich implements Serializable {
 	@Column(name = "diaChi", length = 50)
 	private String diaChi;
 
-	@Column(name = "ngaySinh")
-	private LocalDate ngaySinh;
 
 	@Column(name = "gioBatDau")
 	private LocalTime gioBatDau;

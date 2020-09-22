@@ -89,7 +89,7 @@ public class DieuDuongController {
 		dichvu.setIsActive(dDDetail.getIsActive());
 		dichvu.setGioiTinh(dDDetail.getGioiTinh());
 		dichvu.setDiaChi(dDDetail.getDiaChi());
-
+		dichvu.setMaDieuDuong(dDDetail.getMaDieuDuong());
 		final DieuDuong updatedOrder = dieuDuongRepository.save(dichvu);
 
 		return ResponseEntity.ok(updatedOrder);

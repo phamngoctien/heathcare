@@ -37,32 +37,26 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 @Getter
-@Table(name = "dieuduong")
-public class DieuDuong implements Serializable {
+@Table(name = "user")
+public class User implements Serializable {
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	private Integer id;
 	
-	@Column(name = "tenDieuDuong", nullable = false, length = 50) 
-	private String tenDieuDuong;
+	@Column(name = "tenUser", nullable = false, length = 50) 
+	private String tenUser;
 	
-	@Column(name = "tenDangNhap", unique = true) 
-	private String tenDangNhap;
+	@Column(name = "tenUserDangNhap", unique = true) 
+	private String tenUserDangNhap;
 	
 	@Column(name = "matKhau", nullable = false, length = 50) 
 	private String matKhau;
 	
 	@Column(name = "isActive") 
 	private Boolean isActive;
-	
-	@Column(name = "ngaySinh") 
-	private Date ngaySinh;
-	
+
 	@Column(name = "email", length = 50) 
 	private String email;
-	
-	@Column(name = "maDieuDuong", length = 50) 
-	private String maDieuDuong;
 	
 	@Column(name = "diaChi",  length = 50) 
 	private String diaChi;

@@ -1,22 +1,23 @@
 package com.example.health_care.controller;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.health_care.entity.Admin;
+import com.example.health_care.exception.ResourceNotFoundException;
 import com.example.health_care.repository.AdminRepository;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -25,64 +26,56 @@ public class AdminController {
 	private AdminRepository adminRepository;
 	
 	// get all
-	@RequestMapping(value = "/admin", method = RequestMethod.GET)
-	public ResponseEntity<List<Admin>> findAllAdmin() {
-		List<Admin> admin = adminRepository.findAll();
-		if (admin.isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		@GetMapping("/admin")
+		public List<Admin> getAllAdmin() {
+			return adminRepository.findAll();
 		}
-		return new ResponseEntity<>(admin, HttpStatus.OK);
-	}
-	
-	// get by id
-	@RequestMapping(value = "/admin/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Admin> getAdminById(@PathVariable("id") Integer id) {
-		Optional<Admin> admin = adminRepository.findById(id);
 
-		if (!admin.isPresent()) {
-			return new ResponseEntity<>(admin.get(), HttpStatus.NO_CONTENT);
+		// get by id
+		@GetMapping("/admin/{id}")
+		public ResponseEntity<Admin> getAdminById(@PathVariable(value = "id") Integer loaiDVId)
+				throws ResourceNotFoundException {
+			Admin lDV = adminRepository.findById(loaiDVId)
+					.orElseThrow(() -> new ResourceNotFoundException("Admin not found :: " + loaiDVId));
+			return ResponseEntity.ok().body(lDV);
 		}
-		return new ResponseEntity<>(admin.get(), HttpStatus.OK);
-	}
 
-	// create
-	@RequestMapping(value = "/admin", method = RequestMethod.POST)
-	public ResponseEntity<Admin> taoAdmin(@RequestBody Admin admin, UriComponentsBuilder builder) 
-	{
-		adminRepository.save(admin);
-		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(builder.path("/admin/{id}").buildAndExpand(admin.getId()).toUri());
-		return new ResponseEntity<>(admin, HttpStatus.CREATED);
-	}
+		// create
+		@PostMapping("/admin/them")
+		public Admin taoAdmin(@Validated @RequestBody Admin dichVu) {
 
-	// cap nhat
-	@RequestMapping(value = "/admin/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Admin> capNhatAdmin(@PathVariable("id") Integer id, @RequestBody Admin admin) {
-		Optional<Admin> currentAdmin = adminRepository.findById(id);
-		if (!currentAdmin.isPresent()) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return adminRepository.save(dichVu);
 		}
-		
-		currentAdmin.get().setIsActive(admin.getIsActive());
-//		currentAdmin.get().setMaAdmin(admin.getMaAdmin());
-		currentAdmin.get().setTenAdmin(admin.getTenAdmin());
-		currentAdmin.get().setMatKhau(admin.getMatKhau());
-		currentAdmin.get().setNgaySinh(admin.getNgaySinh());
-		currentAdmin.get().setDiaChi(admin.getDiaChi());
-		currentAdmin.get().setEmail(admin.getEmail());
-		
-		adminRepository.save(currentAdmin.get());
-		return new ResponseEntity<>(currentAdmin.get(), HttpStatus.OK);
-	}
 
-	// delete
-	@RequestMapping(value = "/admin/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<Admin> xoaAdmin(@PathVariable("id") Integer id) {
-		Optional<Admin> admin = adminRepository.findById(id);
-		if (!admin.isPresent()) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		// update
+		@PutMapping("/admin/capnhat/{id}")
+		public ResponseEntity<Admin> capNhatAdmin(@PathVariable(value = "id") Integer dichVuId,
+				@Validated @RequestBody Admin OrderDetail) throws ResourceNotFoundException {
+			Admin Order = adminRepository.findById(dichVuId)
+					.orElseThrow(() -> new ResourceNotFoundException("Admin not found on: " + dichVuId));
+
+			Order.setTenAdmin(OrderDetail.getTenAdmin());
+			Order.setIsActive(OrderDetail.getIsActive());
+			Order.setMatKhau(OrderDetail.getMatKhau());
+			Order.setNgaySinh(OrderDetail.getNgaySinh());
+			Order.setEmail(OrderDetail.getEmail());
+			Order.setDiaChi(OrderDetail.getDiaChi());
+			
+			final Admin updatedOrder = adminRepository.save(Order);
+
+			return ResponseEntity.ok(updatedOrder);
 		}
-		adminRepository.delete(admin.get());
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+		// delete
+		@DeleteMapping("/admin/xoa/{id}")
+		public Map<String, Boolean> xoaAdmin(@PathVariable(value = "id") Integer loaiDVId)
+				throws ResourceNotFoundException {
+			Admin lDV = adminRepository.findById(loaiDVId)
+					.orElseThrow(() -> new ResourceNotFoundException("Admin not found :: " + loaiDVId));
+
+			adminRepository.delete(lDV);
+			Map<String, Boolean> response = new HashMap<>();
+			response.put("deleted", Boolean.TRUE);
+			return response;
 	}
 }

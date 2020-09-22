@@ -59,7 +59,7 @@ public class KhuVucController {
 			
 			loaiDV.setTenKhuVuc(loaiDVDetails.getTenKhuVuc());
 			loaiDV.setMaKhuVuc(loaiDVDetails.getMaKhuVuc());
-	 
+			loaiDV.setGia(loaiDVDetails.getGia());
 	        final KhuVuc updatedUser = khuVucRepository.save(loaiDV);
 	        return ResponseEntity.ok(updatedUser);
 	    }
